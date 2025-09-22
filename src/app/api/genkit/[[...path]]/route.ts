@@ -1,6 +1,5 @@
 'use server';
 
-import {createGcpAuth} from '@genkit-ai/google-auth';
 import {googleAI} from '@genkit-ai/googleai';
 import {genkit, type Plugin} from 'genkit';
 import {createNextHandler} from '@genkit-ai/next';
@@ -8,14 +7,7 @@ import {z} from 'zod';
 
 import '@/ai/flows/optimize-blog-for-seo'; // Make sure the flow is loaded
 
-const gcpAuth = createGcpAuth();
-
-const googleAIWithAuth = googleAI({
-  apiVersion: 'v1beta',
-  auth: gcpAuth,
-});
-
-const plugins: Plugin[] = [googleAIWithAuth];
+const plugins: Plugin[] = [googleAI()];
 
 genkit({
   plugins,
