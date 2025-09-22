@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { MoreHorizontal, View, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import type { Blog } from "@/lib/data";
-import { cn } from "@/lib/utils";
 
 import {
   Table,
@@ -71,7 +70,7 @@ export function BlogListClient({ blogs }: BlogListClientProps) {
           </TableHeader>
           <TableBody>
             {filteredBlogs.map((blog) => (
-              <TableRow key={blog.id}>
+              <TableRow key={blog._id}>
                 <TableCell className="font-medium">{blog.title}</TableCell>
                 <TableCell>{blog.category.name}</TableCell>
                 <TableCell>{getStatusBadge(blog.status)}</TableCell>
@@ -88,7 +87,7 @@ export function BlogListClient({ blogs }: BlogListClientProps) {
                       <DropdownMenuItem onClick={() => router.push(`/blog/${blog.slug}`)}>
                         <View className="mr-2 h-4 w-4" /> View
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => router.push(`/dashboard/blogs/${blog.id}/edit`)}>
+                      <DropdownMenuItem onClick={() => router.push(`/dashboard/blogs/${blog._id}/edit`)}>
                         <Edit className="mr-2 h-4 w-4" /> Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-red-500">

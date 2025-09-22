@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useEffect, useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
@@ -25,18 +25,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { categories, Blog } from "@/lib/data";
+import type { Blog, Category } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { SeoOptimizer } from "./seo-optimizer";
 import { RichTextEditor } from "./rich-text-editor";
+import { saveBlog } from "@/lib/actions";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Terminal } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
   imageUrl: z.string().url({ message: "Please enter a valid image URL." }),
-  content: z.string().min(1, { message: "Content is required." }),
+  content: z.string().min(100, { message: "Content should be at least 100 characters." }),
   category: z.string().min(1, { message: "Category is required." }),
   status: z.enum(["draft", "published", "private"]),
-  slug: z.string().min(1, { message: "Slug is required." }),
+  slug: z.string().min(1, { message: "Slug is required." }).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be a valid URL path segment."),
   excerpt: z.string().min(1, { message: "Excerpt is required." }),
   metaDescription: z.string().optional(),
   tags: z.string().optional(),
@@ -46,6 +49,7 @@ type BlogFormValues = z.infer<typeof formSchema>;
 
 interface BlogEditorProps {
   blog?: Blog;
+  categories: Category[];
 }
 
 function slugify(text: string) {
@@ -58,14 +62,16 @@ function slugify(text: string) {
     .replace(/--+/g, "-"); // Replace multiple - with single -
 }
 
-export function BlogEditor({ blog }: BlogEditorProps) {
+export function BlogEditor({ blog, categories }: BlogEditorProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>();
 
   const defaultValues = {
     title: blog?.title || "",
     content: blog?.content || "",
-    category: blog?.category.id || "",
+    category: (blog?.category as any)?._id || "",
     status: blog?.status || "draft",
     slug: blog?.slug || "",
     imageUrl: blog?.imageUrl || "",
@@ -91,12 +97,19 @@ export function BlogEditor({ blog }: BlogEditorProps) {
 
 
   function onSubmit(values: BlogFormValues) {
-    console.log(values);
-    toast({
-        title: blog ? "Blog Updated!" : "Blog Created!",
-        description: "Your blog post has been saved successfully.",
+    setError(undefined);
+    startTransition(() => {
+        saveBlog(blog?._id, values).then((data) => {
+            if (data?.error) {
+                setError(data.error);
+            } else {
+                toast({
+                    title: blog ? "Blog Updated!" : "Blog Created!",
+                    description: "Your blog post has been saved successfully.",
+                });
+            }
+        });
     });
-    router.push("/dashboard/blogs");
   }
 
   return (
@@ -106,6 +119,13 @@ export function BlogEditor({ blog }: BlogEditorProps) {
             <div className="lg:col-span-2 space-y-8">
                 <Card>
                     <CardContent className="p-6 space-y-6">
+                        {error && (
+                            <Alert variant="destructive">
+                                <Terminal className="h-4 w-4" />
+                                <AlertTitle>Error</AlertTitle>
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
                         <FormField
                             control={form.control}
                             name="title"
@@ -113,7 +133,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 <FormItem>
                                     <FormLabel className="text-lg">Title</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Your amazing blog title" {...field} className="text-lg h-12" />
+                                        <Input placeholder="Your amazing blog title" {...field} className="text-lg h-12" disabled={isPending}/>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -130,6 +150,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                         placeholder="A short, catchy summary of your blog post."
                                         className="min-h-[100px]"
                                         {...field}
+                                        disabled={isPending}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -146,6 +167,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                         <RichTextEditor
                                             initialValue={field.value}
                                             onChange={field.onChange}
+                                            disabled={isPending}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -174,7 +196,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 <FormItem>
                                     <FormLabel>Slug / URL</FormLabel>
                                      <FormControl>
-                                        <Input placeholder="your-blog-post-slug" {...field} />
+                                        <Input placeholder="your-blog-post-slug" {...field} disabled={isPending} />
                                     </FormControl>
                                     <p className="text-xs text-muted-foreground">Unique identifier for SEO-friendly links.</p>
                                     <FormMessage />
@@ -188,7 +210,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 <FormItem>
                                     <FormLabel>Hero Image URL</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="https://example.com/image.png" {...field} />
+                                        <Input placeholder="https://example.com/image.png" {...field} disabled={isPending} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -201,7 +223,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 <FormItem>
                                     <FormLabel>Tags / Keywords</FormLabel>
                                      <FormControl>
-                                        <Input placeholder="e.g. webdev, react, tips" {...field} />
+                                        <Input placeholder="e.g. webdev, react, tips" {...field} disabled={isPending} />
                                     </FormControl>
                                     <p className="text-xs text-muted-foreground">Separate tags with commas.</p>
                                     <FormMessage />
@@ -215,7 +237,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 <FormItem>
                                     <FormLabel>Meta Description</FormLabel>
                                      <FormControl>
-                                        <Textarea placeholder="Custom meta description for SEO." {...field} />
+                                        <Textarea placeholder="Custom meta description for SEO." {...field} disabled={isPending} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -227,7 +249,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Category</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a category" />
@@ -235,7 +257,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                     </FormControl>
                                     <SelectContent>
                                         {categories.map((cat) => (
-                                        <SelectItem key={cat.id} value={cat.id}>
+                                        <SelectItem key={cat._id} value={cat._id}>
                                             {cat.name}
                                         </SelectItem>
                                         ))}
@@ -251,7 +273,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Status</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a status" />
@@ -270,8 +292,8 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                         
                     </CardContent>
                 </Card>
-                <Button type="submit" size="lg" className="w-full">
-                    {blog ? "Update Blog" : "Publish Blog"}
+                <Button type="submit" size="lg" className="w-full" disabled={isPending}>
+                    {isPending ? "Saving..." : blog ? "Update Blog" : "Publish Blog"}
                 </Button>
             </div>
         </div>

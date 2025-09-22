@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { loginUser } from "@/lib/actions";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "../icons";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
+
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -25,7 +29,9 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,9 +41,14 @@ export function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Simulate successful login
-    router.push("/dashboard");
+    setError(undefined);
+    startTransition(() => {
+        loginUser(values).then((data) => {
+            if (data?.error) {
+                setError(data.error);
+            }
+        });
+    });
   }
 
   return (
@@ -52,6 +63,13 @@ export function LoginForm() {
         <CardContent>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {error && (
+                    <Alert variant="destructive">
+                        <Terminal className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
                 <FormField
                 control={form.control}
                 name="email"
@@ -59,7 +77,7 @@ export function LoginForm() {
                     <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                        <Input placeholder="name@example.com" {...field} />
+                        <Input placeholder="name@example.com" {...field} disabled={isPending} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -72,14 +90,14 @@ export function LoginForm() {
                     <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input type="password" placeholder="••••••••" {...field} disabled={isPending}/>
                     </FormControl>
                     <FormMessage />
                     </FormItem>
                 )}
                 />
-                <Button type="submit" className="w-full">
-                    Sign In
+                <Button type="submit" className="w-full" disabled={isPending}>
+                    {isPending ? "Signing In..." : "Sign In"}
                 </Button>
             </form>
             </Form>

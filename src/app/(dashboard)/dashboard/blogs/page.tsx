@@ -5,8 +5,8 @@ import { PageHeader } from "@/components/public/page-header";
 import { BlogListClient } from "@/components/dashboard/blog-list-client";
 import { getBlogs } from "@/lib/data";
 
-export default function BlogListPage() {
-  const blogs = getBlogs();
+export default async function BlogListPage() {
+  const blogs = await getBlogs();
   
   return (
     <div>
@@ -18,7 +18,7 @@ export default function BlogListPage() {
             </Link>
         </Button>
       </PageHeader>
-      <BlogListClient blogs={blogs} />
+      <BlogListClient blogs={JSON.parse(JSON.stringify(blogs))} />
     </div>
   );
 }

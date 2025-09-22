@@ -7,23 +7,23 @@ import { BlogCard } from "@/components/public/blog-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export async function generateStaticParams() {
-    const categories = getCategories();
+    const categories = await getCategories();
     return categories.map((category) => ({
       slug: category.slug,
     }));
 }
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const category = getCategoryBySlug(params.slug);
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
+  const category = await getCategoryBySlug(params.slug);
   
   if (!category) {
     notFound();
   }
 
-  const blogs = getBlogsByCategory(params.slug);
-  const allCategories = getCategories();
+  const blogs = await getBlogsByCategory(params.slug);
+  const allCategories = await getCategories();
   // Using a deterministic image for the hero based on category id
-  const heroImage = PlaceHolderImages[category.id.charCodeAt(4) % PlaceHolderImages.length];
+  const heroImage = PlaceHolderImages[parseInt(category._id.toString().slice(-2), 16) % PlaceHolderImages.length];
 
 
   return (
@@ -61,7 +61,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             {blogs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {blogs.map((blog) => (
-                        <BlogCard key={blog.id} blog={blog} />
+                        <BlogCard key={blog._id} blog={blog} />
                     ))}
                 </div>
             ) : (
@@ -73,10 +73,10 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                 <h3 className="text-2xl font-bold font-headline mb-4">All Categories</h3>
                 <div className="space-y-2">
                 {allCategories.map((cat) => (
-                    <Link href={`/category/${cat.slug}`} key={cat.id}>
-                        <div className={`flex justify-between items-center p-3 rounded-lg hover:bg-primary/10 transition-colors group ${cat.id === category.id ? 'bg-primary/10' : 'bg-secondary'}`}>
-                            <span className={`font-medium group-hover:text-primary ${cat.id === category.id ? 'text-primary' : ''}`}>{cat.name}</span>
-                            <ArrowRight className={`h-4 w-4 text-muted-foreground group-hover:text-primary ${cat.id === category.id ? 'text-primary' : ''}`} />
+                    <Link href={`/category/${cat.slug}`} key={cat._id}>
+                        <div className={`flex justify-between items-center p-3 rounded-lg hover:bg-primary/10 transition-colors group ${cat._id === category._id ? 'bg-primary/10' : 'bg-secondary'}`}>
+                            <span className={`font-medium group-hover:text-primary ${cat._id === category._id ? 'text-primary' : ''}`}>{cat.name}</span>
+                            <ArrowRight className={`h-4 w-4 text-muted-foreground group-hover:text-primary ${cat._id === category._id ? 'text-primary' : ''}`} />
                         </div>
                     </Link>
                 ))}

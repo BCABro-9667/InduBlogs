@@ -6,9 +6,10 @@ import { Editor } from '@tinymce/tinymce-react';
 interface RichTextEditorProps {
     initialValue?: string;
     onChange: (content: string) => void;
+    disabled?: boolean;
 }
 
-export function RichTextEditor({ initialValue, onChange }: RichTextEditorProps) {
+export function RichTextEditor({ initialValue, onChange, disabled }: RichTextEditorProps) {
   const handleEditorChange = (content: string, editor: any) => {
     onChange(content);
   };
@@ -26,6 +27,7 @@ export function RichTextEditor({ initialValue, onChange }: RichTextEditorProps) 
       }}
       initialValue={initialValue || "Start writing your amazing blog post here..."}
       onEditorChange={handleEditorChange}
+      disabled={disabled}
     />
   );
 }
