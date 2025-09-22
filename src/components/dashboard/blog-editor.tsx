@@ -255,7 +255,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a status" />
-                                        </Trigger>
+                                        </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         <SelectItem value="draft">Draft</SelectItem>
