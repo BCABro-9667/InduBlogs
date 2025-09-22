@@ -34,7 +34,8 @@ const formSchema = z.object({
   content: z.string().min(1, { message: "Content is required." }),
   category: z.string().min(1, { message: "Category is required." }),
   status: z.enum(["draft", "published", "private"]),
-  slug: z.string().optional(),
+  slug: z.string().min(1, { message: "Slug is required." }),
+  excerpt: z.string().min(1, { message: "Excerpt is required." }),
   metaDescription: z.string().optional(),
   tags: z.string().optional(),
 });
@@ -56,7 +57,8 @@ export function BlogEditor({ blog }: BlogEditorProps) {
     status: blog?.status || "draft",
     slug: blog?.slug || "",
     imageUrl: blog?.imageUrl || "",
-    metaDescription: "", // Assuming no meta desc in mock data
+    excerpt: blog?.excerpt || "",
+    metaDescription: blog?.metaDescription || "",
     tags: blog?.tags?.join(', ') || "",
   };
 
@@ -97,14 +99,18 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 </FormItem>
                             )}
                         />
-                        <FormField
+                         <FormField
                             control={form.control}
-                            name="imageUrl"
+                            name="excerpt"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-lg">Hero Image URL</FormLabel>
+                                    <FormLabel className="text-lg">Short Description / Excerpt</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="https://example.com/image.png" {...field} />
+                                        <Textarea
+                                        placeholder="A short, catchy summary of your blog post."
+                                        className="min-h-[100px]"
+                                        {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -142,6 +148,33 @@ export function BlogEditor({ blog }: BlogEditorProps) {
             <div className="lg:col-span-1 space-y-8">
                 <Card>
                     <CardContent className="p-6 space-y-6">
+                         <FormField
+                            control={form.control}
+                            name="slug"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Slug / URL</FormLabel>
+                                     <FormControl>
+                                        <Input placeholder="your-blog-post-slug" {...field} />
+                                    </FormControl>
+                                    <p className="text-xs text-muted-foreground">Unique identifier for SEO-friendly links.</p>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="imageUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Hero Image URL</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://example.com/image.png" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="tags"

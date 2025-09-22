@@ -29,6 +29,7 @@ export type Blog = {
   isTopBlog: boolean;
   views: number;
   tags?: string[];
+  metaDescription?: string;
 };
 
 export const authors: Author[] = [
