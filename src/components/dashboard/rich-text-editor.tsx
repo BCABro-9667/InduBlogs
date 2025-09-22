@@ -21,7 +21,8 @@ export function RichTextEditor({ initialValue, onChange }: RichTextEditorProps) 
         menubar: false,
         plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-        content_style: 'body { font-family:Inter,sans-serif; font-size:16px }'
+        content_style: 'body { font-family:Inter,sans-serif; font-size:16px }',
+        directionality: 'ltr'
       }}
       initialValue={initialValue || "Start writing your amazing blog post here..."}
       onEditorChange={handleEditorChange}
