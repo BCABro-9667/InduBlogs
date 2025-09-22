@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
+  imageUrl: z.string().url({ message: "Please enter a valid image URL." }),
   content: z.string().min(1, { message: "Content is required." }),
   category: z.string().min(1, { message: "Category is required." }),
   status: z.enum(["draft", "published", "private"]),
@@ -53,6 +54,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
     category: blog?.category.id || "",
     status: blog?.status || "draft",
     slug: blog?.slug || "",
+    imageUrl: blog?.imageUrl || "",
     metaDescription: "", // Assuming no meta desc in mock data
   };
 
@@ -79,7 +81,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
                 <Card>
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 space-y-6">
                         <FormField
                             control={form.control}
                             name="title"
@@ -93,25 +95,36 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 </FormItem>
                             )}
                         />
-                        <div className="mt-6">
-                            <FormField
-                                control={form.control}
-                                name="content"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-lg">Content</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                            placeholder="Write your story here..."
-                                            className="min-h-[400px] text-base"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                        <FormField
+                            control={form.control}
+                            name="imageUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-lg">Hero Image URL</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://example.com/image.png" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="content"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-lg">Content</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                        placeholder="Write your story here..."
+                                        className="min-h-[400px] text-base"
+                                        {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                     </CardContent>
                 </Card>
 
