@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,7 @@ import {
 import { categories, Blog } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { SeoOptimizer } from "./seo-optimizer";
+import { RichTextEditor } from "./rich-text-editor";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
@@ -83,7 +84,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
   const currentUrlValue = `https://myblog.com/blog/${form.watch("slug") || 'new-post'}`;
 
   useEffect(() => {
-    if (titleValue) {
+    if (titleValue && form.formState.dirtyFields.title) {
       form.setValue("slug", slugify(titleValue), { shouldValidate: true });
     }
   }, [titleValue, form]);
@@ -142,10 +143,9 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                 <FormItem>
                                     <FormLabel className="text-lg">Content</FormLabel>
                                     <FormControl>
-                                        <Textarea
-                                        placeholder="Write your story here..."
-                                        className="min-h-[400px] text-base"
-                                        {...field}
+                                        <RichTextEditor
+                                            initialValue={field.value}
+                                            onChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -255,7 +255,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a status" />
-                                        </SelectTrigger>
+                                        </Trigger>
                                     </FormControl>
                                     <SelectContent>
                                         <SelectItem value="draft">Draft</SelectItem>
