@@ -1,52 +1,84 @@
 "use client";
 
-import Link from "next/link";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Logo } from "../icons";
 import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { Logo } from "../icons";
+
+interface NavLink {
+    href: string;
+    label: string;
+}
 interface MobileNavProps {
-  items: { title: string; href: string }[];
+    navLinks: NavLink[];
 }
 
-export function MobileNav({ items }: MobileNavProps) {
+export function MobileNav({ navLinks }: MobileNavProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const pathname = usePathname();
+
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isOpen]);
 
   return (
-    <div className="md:hidden">
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            className="px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+    <>
+      <Button
+        variant="ghost"
+        onClick={() => setIsOpen(!isOpen)}
+        className="md:hidden"
+      >
+        <Menu className="h-6 w-6" />
+        <span className="sr-only">Toggle Menu</span>
+      </Button>
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-50 md:hidden"
+          onClick={() => setIsOpen(false)}
+        >
+          <div className="fixed inset-0 bg-black/50" />
+          <div
+            className="relative z-10 grid h-full w-full max-w-sm grid-rows-[auto_1fr_auto] gap-6 bg-background p-6"
+            onClick={(e) => e.stopPropagation()}
           >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle Menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <div className="flex flex-col space-y-4">
-            <Link href="/" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
-              <Logo className="h-6 w-6" />
-              <span className="font-bold font-headline">BlogWave</span>
-            </Link>
-            <nav className="flex flex-col space-y-3">
-              {items.map((item) => (
+            <div className="flex items-center justify-between">
+              <Link
+                href="/"
+                className="flex items-center space-x-2"
+                onClick={() => setIsOpen(false)}
+              >
+                <Logo className="h-6 w-6" />
+                <span className="font-bold">BlogWave</span>
+              </Link>
+              <Button variant="ghost" onClick={() => setIsOpen(false)}>
+                <X className="h-6 w-6" />
+                <span className="sr-only">Close Menu</span>
+              </Button>
+            </div>
+            <div className="grid gap-4">
+              {navLinks.map((link) => (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  key={link.href}
+                  href={link.href}
+                  className={`-mx-3 rounded-lg px-3 py-2 text-lg font-medium transition-colors ${
+                    pathname === link.href ? "bg-muted" : "hover:bg-muted"
+                  }`}
                   onClick={() => setIsOpen(false)}
-                  className="text-foreground/70 hover:text-foreground"
                 >
-                  {item.title}
+                  {link.label}
                 </Link>
               ))}
-            </nav>
+            </div>
           </div>
-        </SheetContent>
-      </Sheet>
-    </div>
+        </div>
+      )}
+    </>
   );
 }
