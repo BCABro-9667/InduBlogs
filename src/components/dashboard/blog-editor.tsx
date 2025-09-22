@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,8 +26,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { categories, Blog } from "@/lib/data";
-import { SeoOptimizer } from "./seo-optimizer";
 import { useToast } from "@/hooks/use-toast";
+import { SeoOptimizer } from "./seo-optimizer";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
@@ -44,6 +45,16 @@ type BlogFormValues = z.infer<typeof formSchema>;
 
 interface BlogEditorProps {
   blog?: Blog;
+}
+
+function slugify(text: string) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/[^\w-]+/g, "") // Remove all non-word chars
+    .replace(/--+/g, "-"); // Replace multiple - with single -
 }
 
 export function BlogEditor({ blog }: BlogEditorProps) {
@@ -67,8 +78,16 @@ export function BlogEditor({ blog }: BlogEditorProps) {
     defaultValues,
   });
 
+  const titleValue = form.watch("title");
   const contentValue = form.watch("content");
   const currentUrlValue = `https://myblog.com/blog/${form.watch("slug") || 'new-post'}`;
+
+  useEffect(() => {
+    if (titleValue) {
+      form.setValue("slug", slugify(titleValue), { shouldValidate: true });
+    }
+  }, [titleValue, form]);
+
 
   function onSubmit(values: BlogFormValues) {
     console.log(values);
@@ -185,6 +204,19 @@ export function BlogEditor({ blog }: BlogEditorProps) {
                                         <Input placeholder="e.g. webdev, react, tips" {...field} />
                                     </FormControl>
                                     <p className="text-xs text-muted-foreground">Separate tags with commas.</p>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="metaDescription"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Meta Description</FormLabel>
+                                     <FormControl>
+                                        <Textarea placeholder="Custom meta description for SEO." {...field} />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
