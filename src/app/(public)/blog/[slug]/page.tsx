@@ -66,6 +66,19 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
                     dangerouslySetInnerHTML={{ __html: blog.content }}
                 />
 
+                {blog.tags && blog.tags.length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-2">Tags:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {blog.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <hr className="my-12" />
 
                 <CommentsSection />

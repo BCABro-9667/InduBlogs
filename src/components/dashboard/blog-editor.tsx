@@ -36,6 +36,7 @@ const formSchema = z.object({
   status: z.enum(["draft", "published", "private"]),
   slug: z.string().optional(),
   metaDescription: z.string().optional(),
+  tags: z.string().optional(),
 });
 
 type BlogFormValues = z.infer<typeof formSchema>;
@@ -56,6 +57,7 @@ export function BlogEditor({ blog }: BlogEditorProps) {
     slug: blog?.slug || "",
     imageUrl: blog?.imageUrl || "",
     metaDescription: "", // Assuming no meta desc in mock data
+    tags: blog?.tags?.join(', ') || "",
   };
 
   const form = useForm<BlogFormValues>({
@@ -140,6 +142,20 @@ export function BlogEditor({ blog }: BlogEditorProps) {
             <div className="lg:col-span-1 space-y-8">
                 <Card>
                     <CardContent className="p-6 space-y-6">
+                        <FormField
+                            control={form.control}
+                            name="tags"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tags / Keywords</FormLabel>
+                                     <FormControl>
+                                        <Input placeholder="e.g. webdev, react, tips" {...field} />
+                                    </FormControl>
+                                    <p className="text-xs text-muted-foreground">Separate tags with commas.</p>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="category"

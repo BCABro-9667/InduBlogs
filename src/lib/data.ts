@@ -28,6 +28,7 @@ export type Blog = {
   status: BlogStatus;
   isTopBlog: boolean;
   views: number;
+  tags?: string[];
 };
 
 export const authors: Author[] = [
@@ -71,6 +72,7 @@ export const blogs: Blog[] = [
     status: 'published',
     isTopBlog: true,
     views: 1250,
+    tags: ['webdev', '2024', 'frameworks', 'react'],
   },
   {
     id: 'blog-2',
@@ -86,6 +88,7 @@ export const blogs: Blog[] = [
     status: 'published',
     isTopBlog: true,
     views: 2300,
+    tags: ['productivity', 'hacks', 'work'],
   },
   {
     id: 'blog-3',
@@ -101,6 +104,7 @@ export const blogs: Blog[] = [
     status: 'published',
     isTopBlog: false,
     views: 890,
+    tags: ['ui', 'ux', 'design', 'principles'],
   },
   {
     id: 'blog-4',
@@ -116,6 +120,7 @@ export const blogs: Blog[] = [
     status: 'draft',
     isTopBlog: false,
     views: 0,
+    tags: ['startup', 'pitching', 'business'],
   },
   {
     id: 'blog-5',
@@ -146,6 +151,7 @@ export const blogs: Blog[] = [
     status: 'published',
     isTopBlog: false,
     views: 1500,
+    tags: ['ai', 'creativity', 'art'],
   },
   {
     id: 'blog-7',
