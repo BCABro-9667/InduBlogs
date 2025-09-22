@@ -10,6 +10,7 @@ export interface IAuthor extends Document {
 export interface ICategory extends Document {
   name: string;
   slug: string;
+  heroImageUrl?: string;
 }
 
 // Interface for Blog
@@ -46,6 +47,7 @@ const AuthorSchema: Schema = new Schema({
 const CategorySchema: Schema = new Schema({
   name: { type: String, required: true, unique: true },
   slug: { type: String, required: true, unique: true },
+  heroImageUrl: { type: String },
 });
 
 const BlogSchema: Schema = new Schema({

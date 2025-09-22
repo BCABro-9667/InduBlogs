@@ -18,6 +18,7 @@ import {
     PlusCircle,
     User,
     LogOut,
+    Shapes,
   } from 'lucide-react';
   import { Logo } from '../icons';
   import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -38,6 +39,11 @@ const menuItems = [
         href: '/dashboard/blogs/create',
         label: 'Create Blog',
         icon: PlusCircle,
+    },
+    {
+        href: '/dashboard/categories/create',
+        label: 'Create Category',
+        icon: Shapes,
     },
     {
         href: '/dashboard/profile',
@@ -63,7 +69,7 @@ export function SidebarNav() {
             {menuItems.map(item => (
                 <SidebarMenuItem key={item.href}>
                     <Link href={item.href}>
-                        <SidebarMenuButton isActive={pathname === item.href}>
+                        <SidebarMenuButton isActive={pathname.startsWith(item.href) && item.href !== '/dashboard' ? pathname === item.href : pathname === '/dashboard'}>
                             <item.icon className="size-4" />
                             <span>{item.label}</span>
                         </SidebarMenuButton>

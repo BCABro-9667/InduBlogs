@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import dbConnect from "./mongodb";
-import { BlogModel, UserModel } from "./models";
+import { BlogModel, UserModel, CategoryModel } from "./models";
 import type { Blog } from "./data";
 
 // --- USER ACTIONS ---
@@ -126,4 +126,46 @@ export async function saveBlog(blogId: string | undefined, values: z.infer<typeo
   revalidatePath('/dashboard/blogs');
   revalidatePath('/blog');
   redirect('/dashboard/blogs');
+}
+
+// --- CATEGORY ACTIONS ---
+
+const categoryFormSchema = z.object({
+    name: z.string().min(1, { message: "Category name is required." }),
+    heroImageUrl: z.string().url({ message: "Please enter a valid image URL." }),
+});
+
+function slugify(text: string) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/[^\w-]+/g, "") // Remove all non-word chars
+    .replace(/--+/g, "-"); // Replace multiple - with single -
+}
+
+export async function saveCategory(values: z.infer<typeof categoryFormSchema>) {
+    const validatedFields = categoryFormSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { error: "Invalid fields!" };
+    }
+
+    await dbConnect();
+
+    const { name, heroImageUrl } = validatedFields.data;
+    const slug = slugify(name);
+
+    try {
+        await CategoryModel.create({ name, slug, heroImageUrl });
+    } catch (e: any) {
+        if (e.code === 11000) {
+            return { error: "A category with this name already exists." };
+        }
+        return { error: "Something went wrong saving the category." };
+    }
+
+    revalidatePath('/dashboard/categories/create');
+    revalidatePath('/categories');
 }
