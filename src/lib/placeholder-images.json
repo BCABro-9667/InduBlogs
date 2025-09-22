@@ -1,3 +1,76 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "1",
+      "description": "A modern desk setup with a laptop and coffee.",
+      "imageUrl": "https://picsum.photos/seed/1/600/400",
+      "imageHint": "desk setup"
+    },
+    {
+      "id": "2",
+      "description": "Abstract lines of code on a screen.",
+      "imageUrl": "https://picsum.photos/seed/2/600/800",
+      "imageHint": "code abstract"
+    },
+    {
+      "id": "3",
+      "description": "A person brainstorming on a whiteboard.",
+      "imageUrl": "https://picsum.photos/seed/3/800/600",
+      "imageHint": "whiteboard brainstorming"
+    },
+    {
+      "id": "4",
+      "description": "A group of people collaborating around a table.",
+      "imageUrl": "https://picsum.photos/seed/4/600/400",
+      "imageHint": "team collaboration"
+    },
+    {
+      "id": "5",
+      "description": "Close-up of a keyboard with vibrant lighting.",
+      "imageUrl": "https://picsum.photos/seed/5/600/400",
+      "imageHint": "keyboard lighting"
+    },
+    {
+      "id": "6",
+      "description": "A futuristic city skyline at night.",
+      "imageUrl": "https://picsum.photos/seed/6/600/800",
+      "imageHint": "futuristic city"
+    },
+    {
+      "id": "7",
+      "description": "A serene nature scene with a focus on green leaves.",
+      "imageUrl": "https://picsum.photos/seed/7/800/600",
+      "imageHint": "nature leaves"
+    },
+    {
+      "id": "8",
+      "description": "A minimalist office interior.",
+      "imageUrl": "https://picsum.photos/seed/8/600/400",
+      "imageHint": "minimalist office"
+    },
+    {
+      "id": "9",
+      "description": "A person hiking towards a mountain peak.",
+      "imageUrl": "https://picsum.photos/seed/9/600/800",
+      "imageHint": "mountain hike"
+    },
+    {
+      "id": "10",
+      "description": "A collection of vintage cameras on a shelf.",
+      "imageUrl": "https://picsum.photos/seed/10/800/600",
+      "imageHint": "vintage cameras"
+    },
+    {
+      "id": "11",
+      "description": "A delicious-looking cup of coffee.",
+      "imageUrl": "https://picsum.photos/seed/11/600/400",
+      "imageHint": "coffee cup"
+    },
+    {
+      "id": "12",
+      "description": "A winding road through a forest.",
+      "imageUrl": "https://picsum.photos/seed/12/600/400",
+      "imageHint": "forest road"
+    }
+  ]
 }
