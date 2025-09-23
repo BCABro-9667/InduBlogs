@@ -1,62 +1,63 @@
-import Link from "next/link";
+
+"use client";
+
 import Image from "next/image";
-import { format } from "date-fns";
-import type { Blog } from "@/lib/data";
-import { IAuthor } from "@/lib/models";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { IAuthor, IBlog } from "@/lib/models";
 
 interface BlogCardProps {
-  blog: Blog;
+  blog: IBlog;
   className?: string;
 }
 
 export function BlogCard({ blog, className }: BlogCardProps) {
   const author = blog.author as IAuthor;
+  const category = blog.category as IBlog['category'];
+  
   return (
-    <Link href={`/blog/${blog.slug}`}>
-        <Card className={cn("overflow-hidden h-full group flex flex-col", className)}>
-            <CardHeader className="p-0">
-                <div className="relative h-48 w-full">
-                    <Image
-                        src={blog.imageUrl}
-                        alt={blog.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        data-ai-hint={blog.imageHint}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <Badge className="absolute top-4 left-4">{blog.category.name}</Badge>
-                </div>
-            </CardHeader>
-            <CardContent className="p-6 flex-1">
-                <h3 className="text-xl font-bold font-headline mb-2 group-hover:text-primary transition-colors">
-                    {blog.title}
-                </h3>
-                <p className="text-muted-foreground text-sm line-clamp-3">
-                    {blog.excerpt}
-                </p>
-            </CardContent>
-            <CardFooter className="p-6 pt-0 flex justify-between items-center text-sm">
-                <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage src={author.avatarUrl} alt={author.name} />
-                        <AvatarFallback>{author.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
+    <Card className={cn("overflow-hidden", className)}>
+      <Link href={`/blog/${blog.slug}`}>
+        <div className="relative aspect-video">
+          <Image
+            src={blog.imageUrl}
+            alt={blog.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            data-ai-hint={blog.imageHint}
+          />
+        </div>
+      </Link>
+      <CardContent className="p-6">
+        {category && <Badge className="mb-2">{category.name}</Badge>}
+        <Link href={`/blog/${blog.slug}`}>
+          <h3 className="text-xl font-bold font-headline hover:text-primary transition-colors">
+            {blog.title}
+          </h3>
+        </Link>
+        <p className="text-muted-foreground mt-2 text-sm line-clamp-3">{blog.excerpt}</p>
+        
+        {author && (
+            <div className="flex items-center space-x-3 text-sm mt-4">
+                <Avatar className="h-8 w-8">
+                    <AvatarImage src={author.avatarUrl} alt={author.name} />
+                    <AvatarFallback>{author.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
                     <span className="font-medium">{author.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                        {format(new Date(blog.createdAt), "MMMM d, yyyy")}
+                    </span>
                 </div>
-                <time dateTime={new Date(blog.createdAt).toISOString()} className="text-muted-foreground">
-                    {format(new Date(blog.createdAt), "MMM d, yyyy")}
-                </time>
-            </CardFooter>
-        </Card>
-    </Link>
+            </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

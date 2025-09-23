@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { format } from 'date-fns';
@@ -44,21 +45,23 @@ export default async function BlogPage({ params }: { params: { slug: string } })
                         <div className="absolute inset-0 bg-black/30" />
                     </div>
 
-                    <Badge className="mb-4">{category.name}</Badge>
+                    {category && <Badge className="mb-4">{category.name}</Badge>}
                     
                     <h1 className="text-4xl md:text-5xl font-extrabold font-headline leading-tight mb-4">
                         {blog.title}
                     </h1>
 
                     <div className="flex items-center space-x-4 text-sm">
-                        <div className="flex items-center gap-2">
-                            <Avatar className="h-9 w-9">
-                                <AvatarImage src={author.avatarUrl} alt={author.name} />
-                                <AvatarFallback>{author.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium">{author.name}</span>
-                        </div>
-                        <span className="text-muted-foreground">|</span>
+                        {author && (
+                            <div className="flex items-center gap-2">
+                                <Avatar className="h-9 w-9">
+                                    <AvatarImage src={author.avatarUrl} alt={author.name} />
+                                    <AvatarFallback>{author.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <span className="font-medium">{author.name}</span>
+                            </div>
+                        )}
+                        {author && <span className="text-muted-foreground">|</span>}
                         <time dateTime={new Date(blog.createdAt).toISOString()} className="text-muted-foreground">
                             {format(new Date(blog.createdAt), "MMMM d, yyyy")}
                         </time>

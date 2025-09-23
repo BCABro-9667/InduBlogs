@@ -8,10 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BlogCard } from "@/components/public/blog-card";
 
 export default async function HomePage() {
-  const allBlogs = (await getBlogs()).filter(b => b.status === 'published');
-  const recentBlogs = (await getRecentBlogs()).slice(0, 10);
-  const topBlogs = (await getTopBlogs()).slice(0, 5);
-  const categories = await getCategories();
+  const allBlogs = JSON.parse(JSON.stringify((await getBlogs()).filter(b => b.status === 'published')));
+  const recentBlogs = JSON.parse(JSON.stringify((await getRecentBlogs()).slice(0, 10)));
+  const topBlogs = JSON.parse(JSON.stringify((await getTopBlogs()).slice(0, 5)));
+  const categories = JSON.parse(JSON.stringify(await getCategories()));
 
   return (
     <div className="container mx-auto px-4 py-8">
